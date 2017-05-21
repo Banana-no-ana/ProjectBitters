@@ -85,6 +85,10 @@ def del_entity(client, collection, id):
     ##TODO: Figure out what to do when the entity doesn't exist
     client.DeleteDocument(del_doc_id)
 
+def get_collection_docs(client, collection_name):
+    db = next((data for data in client.ReadDatabases() if data['id'] == config.BITTERS_CONFIG))
+    coll = next((coll for coll in client.ReadCollections(db['_self']) if coll['id'] == collection_name))    
+    return client.ReadDocuments(coll['_self']).__iter__()
     
 
 @app.route('/placeable', methods=['GET', 'POST'])
@@ -154,6 +158,13 @@ def placeable_upgrade():
     client, coll = setup_collection(config.PLACEABLE_UPGRADE)    
     form = forms.placeableUpgradeForm()
     
+    #Get all documents and populate on the screen
+    docs = client.ReadDocuments(coll['_self']).__iter__()
+    
+    #Get all upgrade types
+    col_upgrade_docs = get_collection_docs(client, config.PLACEABLE_UPGRADE_TYPE)
+    form.upgrade_type.choices = [(g['id'], g['name']) for g in col_upgrade_docs]
+    
     if form.validate_on_submit():
         #form has been validated. We can try creating a new document now. 
         #TODO: Check for the ID/name to see if it exists first before submitting. Otherwise gonna throw error. 
@@ -165,11 +176,10 @@ def placeable_upgrade():
             obj.name = form.name.data
             obj.id = form.name.data
             obj.description = form.description.data
+            obj.upgrade_type = form.upgrade_type.data
 
             document = client.UpsertDocument(coll['_self'], obj.__dict__)            
 
-    #Get all documents and populate on the screen
-    docs = client.ReadDocuments(coll['_self']).__iter__()    
     
     return render_template('placeable_upgrade.html', 
                             title = 'Placeable Upgrades', 

@@ -18,6 +18,10 @@
                     {{ form.name(class_="u-full-width") }}
                 </div>
                 <div class="row">
+                    {{ form.upgrade_type.label }}
+                    {{ form.upgrade_type(class_="u-full-width") }}
+                </div>
+                <div class="row">
                     {{ form.description.label }}
                     {{ form.description(class_="u-full-width") }}
                 </div>
@@ -34,6 +38,11 @@
             <tr>
                 <td>Name</td>
                 <td><b>{{ existing.name }}</b></td>
+            </tr>
+            <tr>
+                <td>Upgrade Type</td>
+                <td>{{ existing.upgrade_type }}</td>
+            </tr>
             <tr>
                 <td>Description</td>
                 <td>{{ existing.description }}</td>

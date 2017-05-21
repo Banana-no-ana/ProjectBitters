@@ -19,6 +19,8 @@ class placeableUpgradeTypeForm(Form):
 class placeableUpgradeForm(Form):
     name = StringField('Type Name', [validators.Length(min=4, max=20)])
     description = TextAreaField('Describe the Intention of this upgrade', [validators.Length(min=4, max=250)])
+    #Upgrde type selectable
+    upgrade_type = SelectField(u'Upgrade Type', coerce=unicode)
     del_entity = HiddenField('del_entity')
     #upgradeType = undefined
 
